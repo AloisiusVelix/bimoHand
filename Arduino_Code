@@ -1,0 +1,70 @@
+#include <MyoController.h>
+#include <Servo.h>
+Servo myServo1;
+Servo myServo2;
+
+int servPin1 = 5;
+int servPin2 = 6;
+int standby = 0;
+int spread = 60;
+int hook = -60;
+
+MyoController myo = MyoController();
+
+void setup() {
+
+  Serial.begin(9600);
+  myServo1.attach(servPin1);
+  myServo2.attach(servPin2);
+  pinMode(LED_BUILTIN, OUTPUT);
+
+  myo.initMyo();
+}
+
+void loop()
+{
+  myo.updatePose();
+  switch ( myo.getCurrentPose() ) {
+    case rest:
+      myServo1.write(standby);
+      myServo2.write(standby);
+      digitalWrite(LED_BUILTIN, LOW);
+      Serial.println("rest");
+      return 0;
+      break;
+    case fist:
+      myServo1.write(hook);
+      myServo2.write(hook);
+      digitalWrite(LED_BUILTIN, HIGH);
+      Serial.println("fist");
+      return 0;
+      break;
+    case waveIn:
+      myServo1.write(hook);
+      myServo2.write(spread);
+      digitalWrite(LED_BUILTIN, HIGH);
+      Serial.println("waveIn");
+      return 0;
+      break;
+    case waveOut:
+      myServo1.write(spread);
+      myServo2.write(hook);
+      digitalWrite(LED_BUILTIN, HIGH);
+      Serial.println("waveOut");
+      return 0;
+      break;
+    case fingersSpread:
+      myServo1.write(spread);
+      myServo2.write(spread);
+      digitalWrite(LED_BUILTIN, HIGH);
+      Serial.println("fingersSpread");
+      return 0;
+      break;
+    case doubleTap:
+      digitalWrite(LED_BUILTIN, HIGH);
+      Serial.println("doubleTap");
+      return 0;
+      break;
+  }
+  delay(100);
+}
